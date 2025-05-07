@@ -65,9 +65,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": env("SQL_ENGINE"),
-        "NAME": env("SQL_NAME"),
+        "NAME":   env("SQL_NAME"),
+        "USER":   env("SQL_USER"),
+        "PASSWORD": env("SQL_PASSWORD"),
+        "HOST":   env("SQL_HOST"),
+        "PORT":   env("SQL_PORT"),
     }
 }
+
 
 # --- i18n ---
 LANGUAGE_CODE = "es-mx"
