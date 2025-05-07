@@ -1,0 +1,21 @@
+# Python
+*.pyc
+__pycache__/
+.venv/
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+
+# Entorno / secretos
+.env
+
+# VS Code
+.vscode/
+
+# Docker
+*.log
+*.pid
+dist/
+build/
