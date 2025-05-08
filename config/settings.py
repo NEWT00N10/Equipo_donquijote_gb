@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # futuras apps:
     # "rest_framework",
+    "accounts",
+    "catalog",
 ]
 
 MIDDLEWARE = [
@@ -73,6 +75,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "accounts.CustomUser"
+
 
 # --- i18n ---
 LANGUAGE_CODE = "es-mx"
@@ -86,3 +90,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
