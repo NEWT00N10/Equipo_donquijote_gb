@@ -29,6 +29,7 @@ router.register(r'orders',       OrderViewSet,       basename='order')
 urlpatterns = [
     # Home y catálogo
     path("",                    home_view,               name='home'),
+    path("", home_view, name="home"),
     path("books/",              BookListView.as_view(),   name='book-list'),
     path("books/<int:pk>/",     BookDetailView.as_view(), name='book-detail'),
 
@@ -49,8 +50,8 @@ urlpatterns = [
     path("accounts/",           include("django.contrib.auth.urls")),
 
     # API REST global
-    path("api/",                include(router.urls)),
-    path("api-auth/",           include("rest_framework.urls")),
+    #path("api/v1/", include(router.urls)),
+    #path("api-auth/",           include("rest_framework.urls")),
 ]
 
 # Servir estáticos y media en DEBUG
