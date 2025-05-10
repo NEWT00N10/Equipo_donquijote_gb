@@ -1,0 +1,30 @@
+/* custom.css — ajustes de marca y espaciado */
+body {
+  padding-top: 70px; /* deja espacio para el navbar fijo */
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #343a40;
+}
+
+/* Navbar personalizado */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-link {
+  margin-right: 1rem;
+  font-size: 1rem;
+}
+
+.form-control {
+  max-width: 300px;
+}
+
+footer {
+  padding: 1rem 0;
+  text-align: center;
+  background-color: #ffffff;
+  margin-top: 2rem;
+  border-top: 1px solid #dee2e6;
+}
