@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from orders.views import checkout_success_view
 from rest_framework.routers import DefaultRouter
 
 # API ViewSets
@@ -33,8 +33,9 @@ urlpatterns = [
     path("books/<int:pk>/",     BookDetailView.as_view(), name='book-detail'),
 
     # Carrito y checkout
-    path("cart/",               cart_view,                name='cart-view'),
-    path("checkout/",           checkout_view,            name='cart-checkout'),
+    path("cart/",    cart_view,               name="cart-view"),
+    path("checkout/", checkout_view,           name="cart-checkout"),
+    path("checkout/success/<int:order_id>/", checkout_success_view, name="checkout-success"),
 
     # Historial de pedidos y perfil
     path("orders/history/",     OrderListView.as_view(),  name='orders-list'),
