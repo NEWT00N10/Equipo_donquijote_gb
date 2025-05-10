@@ -24,18 +24,30 @@ def cart_view(request):
 
 def checkout_view(request):
     """
-    Ejecuta la creación de pedido vía API y muestra confirmación.
+    - GET: redirige al carrito.
+    - POST: crea el pedido y muestra confirmación.
     """
     if not request.user.is_authenticated:
         return redirect("admin:login")
-    # Llamar internamente al método create de OrderViewSet
+
+    if request.method != "POST":
+        # Si es GET u otro método, volvemos al carrito
+        return redirect("cart-view")
+
+    # POST: ejecutar la creación de pedido vía API
     viewset = OrderViewSet.as_view({"post": "create"})
-    response = viewset(request._request)  # WSGIRequest
-    if response.status_code == 201:
-        order = response.data
-        return render(request, "cart/checkout.html", {"order": order})
-    # En caso de error mostramos detalle
-    return render(request, "cart/cart.html", {
-        "items": CartItem.objects.filter(user=request.user).select_related("book"),
-        "error": response.data.get("detail", "Error al procesar pedido.")
+    response = viewset(request)
+
+    if response.status_code != 201:
+        # Error → volver al carrito mostrando el mensaje
+        items = CartItem.objects.filter(user=request.user).select_related("book")
+        return render(request, "cart/cart.html", {
+            "items": items,
+            "error": response.data.get("detail", "Error al procesar pedido.")
+        })
+
+    # Pedido creado → mostrar resumen
+    order = response.data
+    return render(request, "cart/checkout.html", {
+        "order": order
     })
