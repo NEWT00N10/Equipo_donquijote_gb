@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ book.title }} – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+  <div class="row">
+    <!-- Columna de imagen -->
+    <div class="col-12 col-md-4 mb-4">
+      <div class="card">
+        {% if book.cover %}
+          <img src="{{ book.cover.url }}" class="card-img-top" alt="{{ book.title }}">
+        {% else %}
+          <img src="{% static 'img/no-cover.png' %}" class="card-img-top" alt="Sin portada">
+        {% endif %}
+        <div class="card-body text-center">
+          <h5 class="card-title">{{ book.title }}</h5>
+          <p class="card-text text-muted">{{ book.author }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna de datos y acciones -->
+    <div class="col-12 col-md-8">
+      <h2>{{ book.title }}</h2>
+      <p class="text-muted">{{ book.get_genre_display }} – {{ book.get_book_type_display }}</p>
+      <p><strong>Precio:</strong> <span class="fs-4 text-primary">{{ book.price|floatformat:2 }} MXN</span></p>
+      <p><strong>Disponibles:</strong> {{ book.copies_available }}</p>
+
+      <!-- Botones de acción -->
+      <div class="mb-4">
+        {% if user.is_authenticated %}
+          <form action="{% url 'cart-view' %}" method="post" class="d-inline-block me-2">
+            {% csrf_token %}
+            <input type="hidden" name="book_id" value="{{ book.pk }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="btn btn-primary btn-lg">
+              🛒 Añadir al carrito
+            </button>
+          </form>
+          <form action="{% url 'favorite-list' %}" method="post" class="d-inline-block">
+            {% csrf_token %}
+            <input type="hidden" name="book" value="{{ book.pk }}">
+            <button type="submit" class="btn btn-outline-secondary btn-lg">
+              ❤️ Favorito
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'admin:login' %}" class="btn btn-primary btn-lg">Inicia sesión para comprar</a>
+        {% endif %}
+      </div>
+
+      <!-- Pestañas de descripción y reseñas -->
+      <ul class="nav nav-tabs mb-3" id="bookTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="desc-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#desc"
+            type="button"
+            role="tab"
+            aria-controls="desc"
+            aria-selected="true"
+          >
+            Descripción
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="reviews-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#reviews"
+            type="button"
+            role="tab"
+            aria-controls="reviews"
+            aria-selected="false"
+          >
+            Reseñas ({{ book.reviews.count }})
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="bookTabContent">
+        <!-- Descripción -->
+        <div
+          class="tab-pane fade show active"
+          id="desc"
+          role="tabpanel"
+          aria-labelledby="desc-tab"
+        >
+          {% if book.description %}
+            <p>{{ book.description }}</p>
+          {% else %}
+            <p class="text-muted">Esta edición no incluye descripción.</p>
+          {% endif %}
+        </div>
+
+        <!-- Reseñas -->
+        <div
+          class="tab-pane fade"
+          id="reviews"
+          role="tabpanel"
+          aria-labelledby="reviews-tab"
+        >
+          {% if book.reviews.exists %}
+            {% for review in book.reviews.all %}
+              <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ review.user.username }}</strong>
+                  <span>⭐️ {{ review.rating }}/5</span>
+                </div>
+                {% if review.comment %}
+                  <p class="mb-1">{{ review.comment }}</p>
+                {% endif %}
+                <small class="text-muted">{{ review.created_at|date:"d M Y H:i" }}</small>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted">Aún no hay reseñas para este libro.</p>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+            <hr>
+            <h5>Deja tu reseña</h5>
+            <form action="{% url 'review-list' %}" method="post" class="row g-3">
+              {% csrf_token %}
+              <input type="hidden" name="book" value="{{ book.pk }}">
+              <div class="col-auto">
+                <label for="rating" class="form-label">Calificación</label>
+                <select name="rating" id="rating" class="form-select" required>
+                  {% for i in "12345" %}
+                    <option value="{{ i }}">{{ i }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-12">
+                <label for="comment" class="form-label">Comentario (opcional)</label>
+                <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-success">Publicar reseña</button>
+              </div>
+            </form>
+          {% else %}
+            <p class="mt-3"><a href="{% url 'admin:login' %}">Inicia sesión</a> para dejar una reseña.</p>
+          {% endif %}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+{% endblock %}
