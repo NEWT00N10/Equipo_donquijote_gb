@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Mis Pedidos – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">Historial de Pedidos</h2>
+  {% if orders %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Items</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td>{{ order.orderitem_set.count }}</td>
+          <td>${{ order.total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-center text-secondary">No tienes pedidos aún.</p>
+  {% endif %}
+</div>
+{% endblock %}

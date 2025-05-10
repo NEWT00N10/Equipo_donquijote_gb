@@ -1,0 +1,24 @@
+<aside class="col-lg-3 mb-4">
+  <h5 class="fw-bold mb-3">Filtrar</h5>
+  <form method="get">
+    <!-- Género -->
+    <div class="mb-3">
+      <label class="form-label">{{ filter.form.genre.label }}</label>
+      {{ filter.form.genre }}
+    </div>
+    <!-- Tipo de libro -->
+    <div class="mb-3">
+      <label class="form-label">{{ filter.form.book_type.label }}</label>
+      {{ filter.form.book_type }}
+    </div>
+    <!-- Rango de precio -->
+    <div class="mb-3">
+      <label class="form-label">Precio min / max</label>
+      <div class="d-flex">
+        {{ filter.form.min_price }}
+        {{ filter.form.max_price }}
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Aplicar filtros</button>
+  </form>
+</aside>

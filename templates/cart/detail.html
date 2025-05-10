@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi Carrito – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">Mi Carrito</h2>
+  {% if items %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th scope="col">Portada</th>
+            <th scope="col">Título</th>
+            <th scope="col">Precio unitario</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Subtotal</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr data-id="{{ item.pk }}">
+            <td>
+              <img
+                src="{% if item.book.cover %}{{ item.book.cover.url }}{% else %}{% static 'img/no-cover.png' %}{% endif %}"
+                alt="{{ item.book.title }}"
+                width="60"
+                height="90"
+                class="rounded"
+              >
+            </td>
+            <td>{{ item.book.title }}</td>
+            <td>${{ item.book.price }}</td>
+            <td>
+              <input
+                type="number"
+                class="form-control quantity-input"
+                value="{{ item.quantity }}"
+                min="1"
+                style="width: 80px;"
+              >
+            </td>
+            <td class="item-subtotal">${{ item.quantity|mul:item.book.price }}</td>
+            <td>
+              <button class="btn btn-sm btn-link text-danger btn-remove-item">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end align-items-center mt-4">
+      <h4 class="me-3">Total:</h4>
+      <h4 id="cart-total">${{ total }}</h4>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <a href="{% url 'cart-checkout' %}" class="btn btn-lg btn-primary">
+        Confirmar pedido
+      </a>
+    </div>
+  {% else %}
+    <p class="text-center text-secondary">Tu carrito está vacío.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Helper para actualizar totales en el DOM
+  function updateTotals(row, newQty, unitPrice) {
+    const subtotalCell = row.querySelector('.item-subtotal');
+    const newSubtotal = (newQty * unitPrice).toFixed(2);
+    subtotalCell.textContent = `$${newSubtotal}`;
+
+    // Recalcular total general
+    let total = 0;
+    document.querySelectorAll('.item-subtotal').forEach(cell => {
+      total += parseFloat(cell.textContent.replace('$',''));
+    });
+    document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+  }
+
+  // Cambiar cantidad
+  document.querySelectorAll('.quantity-input').forEach(input => {
+    input.addEventListener('change', async (e) => {
+      const row = e.target.closest('tr');
+      const itemId = row.dataset.id;
+      const newQty = parseInt(e.target.value);
+      if (newQty < 1) return;
+
+      // Llamada PATCH a /api/cart/<id>/
+      const res = await fetch(`/api/cart/${itemId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ quantity: newQty })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        updateTotals(row, data.quantity, parseFloat(data.book.price));
+      } else {
+        alert('No se pudo actualizar la cantidad.');
+      }
+    });
+  });
+
+  // Eliminar item
+  document.querySelectorAll('.btn-remove-item').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const row = e.target.closest('tr');
+      const itemId = row.dataset.id;
+      if (!confirm('¿Eliminar este libro del carrito?')) return;
+
+      const res = await fetch(`/api/cart/${itemId}/`, {
+        method: 'DELETE',
+        headers: { 'X-CSRFToken': csrftoken }
+      });
+      if (res.ok) {
+        row.remove();
+        // Actualizar total general
+        let total = 0;
+        document.querySelectorAll('.item-subtotal').forEach(cell => {
+          total += parseFloat(cell.textContent.replace('$',''));
+        });
+        document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+      } else {
+        alert('No se pudo eliminar el item.');
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

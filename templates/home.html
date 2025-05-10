@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inicio – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- Indicadores -->
+    <div class="carousel-indicators">
+      {% for banner in banners %}
+      <button
+        type="button"
+        data-bs-target="#homeCarousel"
+        data-bs-slide-to="{{ forloop.counter0 }}"
+        {% if forloop.first %}class="active" aria-current="true"{% endif %}
+        aria-label="Slide {{ forloop.counter }}"
+      ></button>
+      {% endfor %}
+    </div>
+
+    <!-- Slides -->
+    <div class="carousel-inner">
+      {% for banner in banners %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <img
+          data-srcset="{% static 'img/banners/banner' %}{{ forloop.counter }}.webp 1x, {% static 'img/banners/banner' %}{{ forloop.counter }}.jpg 2x"
+          class="d-block w-100 carousel-img lazyload"
+          alt="{{ banner.title }}"
+          loading="lazy"
+        >
+        <div class="carousel-caption d-none d-md-block">
+          <h2 class="carousel-title">{{ banner.title }}</h2>
+          <p class="carousel-subtitle">{{ banner.subtitle }}</p>
+          <a href="{{ banner.link }}" class="btn btn-lg btn-primary mt-3">
+            {{ banner.button_text }}
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Controles -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  </div>
+</div>
+
+<!-- Sección de bienvenida -->
+<section class="py-5 bg-light text-center">
+  <div class="container">
+    <h1 class="display-5 mb-3 text-primary">Bienvenido a Don Quijote GB</h1>
+    <p class="lead mx-auto" style="max-width: 700px;">
+      Somos tu biblioteca en línea de confianza. Explora miles de títulos, desde clásicos universales hasta las últimas novedades.
+      Diseñada para ofrecerte una experiencia cómoda en tu PC, con recomendaciones personalizadas y ofertas exclusivas.
+    </p>
+  </div>
+</section>
+{% endblock %}

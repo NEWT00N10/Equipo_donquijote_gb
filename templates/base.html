@@ -3,35 +3,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}Don Quijote GB{% endblock %}</title>
+
+  <!-- Google Fonts: Montserrat y Open Sans -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@300;400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;600&display=swap"
     rel="stylesheet"
   >
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Don Quijote GB{% endblock %}</title>
 
   <!-- Bootstrap 5 CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
-    integrity="sha384-XLy2gua6VYxlpiFlw1F0Xh8pMe+5dRbo6RbOaY1TVVje3ME5gG9MX9G6hfbv4H62"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
     crossorigin="anonymous"
   >
+
   <!-- Bootstrap Icons -->
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
   >
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 </head>
+
 <body>
   <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
       <div class="container">
+        <!-- Logo -->
         <a class="navbar-brand" href="{% url 'book-list' %}">
           <img src="{% static 'img/logo.png' %}" alt="Don Quijote GB" height="40">
         </a>
+
+        <!-- Toggle móvil -->
         <button
           class="navbar-toggler"
           type="button"
@@ -39,58 +48,124 @@
           data-bs-target="#navbarMain"
           aria-controls="navbarMain"
           aria-expanded="false"
-          aria-label="Toggle navigation"
+          aria-label="Alternar navegación"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarMain">
+          <!-- Enlaces principales -->
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item"><a class="nav-link" href="{% url 'book-list' %}">Catálogo</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Promociones</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Novedades</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Favoritos</a></li>
           </ul>
 
-          <!-- Búsqueda con autosuggest -->
-          <form class="d-flex me-3 position-relative" method="get" action="{% url 'book-list' %}">
-            <input
-              id="live-search"
-              class="form-control me-2"
-              type="search"
-              name="search"
-              placeholder="Buscar libros..."
-              aria-label="Buscar"
-              autocomplete="off"
-              value="{{ request.GET.search }}"
-            >
-            <button class="btn btn-outline-primary" type="submit">Buscar</button>
+          <!-- Buscador autosuggest -->
+          <form class="d-flex position-relative me-3" onsubmit="return false;">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-secondary"></i>
+              </span>
+              <input
+                id="live-search"
+                class="form-control border-start-0"
+                type="search"
+                placeholder="Buscar libros..."
+                autocomplete="off"
+              >
+            </div>
             <ul
               id="search-suggestions"
-              class="list-group position-absolute w-100"
-              style="top:100%; z-index:1000; display:none;"
+              class="list-group position-absolute w-100 mt-1"
+              style="display:none; z-index: 2000;"
             ></ul>
           </form>
 
-          {% if user.is_authenticated %}
-            <a href="{% url 'cart-view' %}" class="btn btn-outline-secondary me-2">🛒 Carrito</a>
-            <div class="dropdown">
+          <!-- Iconos Carrito, Favoritos y Perfil/Login -->
+          <ul class="navbar-nav align-items-center mb-2 mb-lg-0">
+            <!-- Carrito -->
+            <li class="nav-item dropdown me-3">
               <a
-                class="btn btn-outline-secondary dropdown-toggle"
+                class="nav-link position-relative"
                 href="#"
-                id="userMenu"
+                id="cartDropdown"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                {{ user.username }}
+                <i class="bi bi-cart3 fs-5" style="color: var(--color-primary);"></i>
+                <span
+                  id="cart-count"
+                  class="badge bg-secondary position-absolute top-0 start-100 translate-middle"
+                >0</span>
               </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                <li><a class="dropdown-item" href="{% url 'admin:logout' %}">Cerrar sesión</a></li>
-              </ul>
-            </div>
-          {% else %}
-            <a href="{% url 'admin:login' %}" class="btn btn-outline-primary">Iniciar sesión</a>
-          {% endif %}
+              <div
+                class="dropdown-menu dropdown-menu-end p-3"
+                aria-labelledby="cartDropdown"
+                style="min-width: 300px;"
+              >
+                <div id="cart-items-container">
+                  <p class="text-center text-secondary small my-3">Cargando...</p>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div id="cart-footer" class="px-2"></div>
+              </div>
+            </li>
+
+            <!-- Favoritos -->
+            <li class="nav-item dropdown me-3">
+              <a
+                class="nav-link position-relative"
+                href="#"
+                id="favDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-heart fs-5" style="color: var(--color-primary);"></i>
+                <span
+                  id="fav-count"
+                  class="badge bg-secondary position-absolute top-0 start-100 translate-middle"
+                >0</span>
+              </a>
+              <div
+                class="dropdown-menu dropdown-menu-end p-3"
+                aria-labelledby="favDropdown"
+                style="min-width: 240px;"
+              >
+                <div id="fav-items-container">
+                  <p class="text-center text-secondary small my-3">Cargando favoritos…</p>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div id="fav-footer" class="px-2"></div>
+              </div>
+            </li>
+
+            <!-- Perfil / Login -->
+            <li class="nav-item">
+              {% if request.user.is_authenticated %}
+                <div class="dropdown">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="userMenu"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i class="bi bi-person-circle fs-5" style="color: var(--color-primary);"></i>
+                    {{ request.user.username }}
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Mi Cuenta</a></li>
+                    <li><a class="dropdown-item" href="{% url 'orders-list' %}">Mis Pedidos</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                  </ul>
+                </div>
+              {% else %}
+                <a class="btn btn-outline-primary" href="{% url 'login' %}">Iniciar Sesión</a>
+              {% endif %}
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -117,9 +192,9 @@
         <div class="col-6 col-md-3 mb-4">
           <h6 class="text-uppercase fw-bold mb-3">Para ti</h6>
           <ul class="list-unstyled">
-            <li><a href="#">Mis Favoritos</a></li>
-            <li><a href="{% url 'cart-view' %}">Mi carrito</a></li>
-            <li><a href="#">Historial de pedidos</a></li>
+            <li><a href="{% url 'favorites-list' %}">Mis Favoritos</a></li>
+            <li><a href="{% url 'cart-view' %}">Mi Carrito</a></li>
+            <li><a href="{% url 'orders-list' %}">Historial de pedidos</a></li>
             <li><a href="#">Mis reseñas</a></li>
           </ul>
         </div>
@@ -138,12 +213,8 @@
           <h6 class="text-uppercase fw-bold mb-3">Suscríbete</h6>
           <p class="small">Recibe ofertas y noticias en tu correo</p>
           <form action="#" method="post" class="d-flex mb-3">
-            <input
-              type="email"
-              class="form-control me-2"
-              placeholder="Tu email"
-              required
-            >
+            {% csrf_token %}
+            <input type="email" class="form-control me-2" placeholder="Tu email" required>
             <button class="btn btn-primary" type="submit">OK</button>
           </form>
           <div>
@@ -159,65 +230,147 @@
     </div>
   </footer>
 
-  <!-- Bootstrap Bundle JS -->
+  <!-- Bootstrap Bundle JS (Popper incluido) -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-w76A2z02tY3r3QFfyy2FZl5ybvA+0QwQ1hbbnrS0E3jUksDq8nZDB+1f9UnF+MzT"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"
   ></script>
 
-  <!-- Inicializar carousel -->
+  <!-- Autosuggest & Dropdowns dinámicos -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const carouselEl = document.getElementById('promoCarousel');
-      if (carouselEl) {
-        new bootstrap.Carousel(carouselEl, {
-          interval: 5000,
-          ride: 'carousel'
-        });
-      }
-    });
-  </script>
+    // Función debounce
+    function debounce(fn, delay) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
 
-  <!-- Búsqueda en vivo -->
-  <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Autosuggest
       const input = document.getElementById('live-search');
       const list  = document.getElementById('search-suggestions');
-      let timeout = null;
-
-      input.addEventListener('input', () => {
-        clearTimeout(timeout);
+      input.addEventListener('input', debounce(async () => {
         const q = input.value.trim();
-        if (q.length < 2) {
-          list.style.display = 'none';
-          return;
-        }
-        timeout = setTimeout(() => {
-          fetch(`/api/books/?search=${encodeURIComponent(q)}&page_size=5`)
-            .then(res => res.json())
-            .then(data => {
-              list.innerHTML = '';
-              data.results.forEach(book => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item list-group-item-action';
-                li.textContent = `${book.title} — ${book.author}`;
-                li.addEventListener('click', () => {
-                  window.location.href = `/books/${book.id}/`;
-                });
-                list.appendChild(li);
-              });
-              list.style.display = data.results.length ? 'block' : 'none';
-            });
-        }, 300);
-      });
+        if (q.length < 2) { list.style.display = 'none'; return; }
+        const res = await fetch(`/api/books/?search=${encodeURIComponent(q)}&page_size=5`);
+        const data = await res.json();
+        list.innerHTML = '';
+        data.results.forEach(book => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item list-group-item-action';
+          li.textContent = `${book.title} — ${book.author}`;
+          li.onclick = () => window.location.href = `/books/${book.id}/`;
+          list.appendChild(li);
+        });
+        list.style.display = data.results.length ? 'block' : 'none';
+      }, 250));
 
       document.addEventListener('click', e => {
         if (!input.contains(e.target) && !list.contains(e.target)) {
           list.style.display = 'none';
         }
       });
+
+      // Dropdown Carrito y Favoritos
+      async function loadItems(apiUrl, containerId, footerId, countId, renderItem, renderFooter) {
+        const container = document.getElementById(containerId);
+        const footer    = document.getElementById(footerId);
+        const count     = document.getElementById(countId);
+        try {
+          const res = await fetch(apiUrl, { credentials: 'same-origin' });
+          if (res.status === 401) throw 'not-auth';
+          const items = await res.json();
+          container.innerHTML = '';
+          if (!items.length) {
+            container.innerHTML = `<p class="text-center text-secondary small my-3">${apiUrl.includes('cart') ? 'Tu carrito está vacío.' : 'No tienes favoritos.'}</p>`;
+          } else {
+            items.forEach(item => container.appendChild(renderItem(item)));
+          }
+          footer.innerHTML = renderFooter(items);
+          count.textContent  = items.length;
+        } catch (err) {
+          if (err === 'not-auth') {
+            container.innerHTML = `<p class="text-center text-secondary small my-3">Inicia sesión para ver esto.</p>`;
+            footer.innerHTML    = `<a href="{% url 'login' %}" class="btn btn-primary w-100 btn-sm">Iniciar Sesión</a>`;
+            count.textContent   = '0';
+          } else {
+            container.innerHTML = `<p class="text-center text-danger small my-3">Error cargando datos.</p>`;
+          }
+        }
+      }
+
+      // Renderizadores
+      const renderCartItem = item => {
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-center mb-2';
+        div.innerHTML = `
+          <img src="${item.book.cover || '/static/img/no-cover.png'}" width="40" height="60" class="me-2 rounded">
+          <div class="flex-grow-1">
+            <div class="small">${item.book.title}</div>
+            <div class="text-secondary small">${item.quantity} × $${parseFloat(item.book.price).toFixed(2)}</div>
+          </div>
+          <button class="btn btn-sm btn-link text-danger remove-cart-item" data-id="${item.id}">
+            <i class="bi bi-trash"></i>
+          </button>
+        `;
+        return div;
+      };
+      const renderCartFooter = items => {
+        if (!items.length) {
+          return `<button class="btn btn-primary w-100 mt-2" disabled>Ir al carrito</button>`;
+        }
+        const total = items.reduce((sum, it) => sum + it.quantity * parseFloat(it.book.price), 0);
+        return `
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold">Total:</span>
+            <span class="fw-bold">$${total.toFixed(2)}</span>
+          </div>
+          <a href="{% url 'cart-view' %}" class="btn btn-primary w-100">Pagar</a>
+        `;
+      };
+
+      const renderFavItem = fav => {
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-center mb-2';
+        div.innerHTML = `
+          <img src="${fav.book.cover || '/static/img/no-cover.png'}" width="40" height="60" class="me-2 rounded">
+          <a href="/books/${fav.book.id}/" class="flex-grow-1 text-truncate small text-dark">
+            ${fav.book.title}
+          </a>
+        `;
+        return div;
+      };
+      const renderFavFooter = items => {
+        return items.length
+          ? `<a href="{% url 'favorites-list' %}" class="btn btn-primary w-100 btn-sm">Ver todos</a>`
+          : `<a href="{% url 'book-list' %}" class="btn btn-outline-primary w-100 btn-sm">Explorar libros</a>`;
+      };
+
+      // Eventos
+      document.getElementById('cartDropdown').addEventListener('show.bs.dropdown', () =>
+        loadItems('/api/cart/', 'cart-items-container', 'cart-footer', 'cart-count', renderCartItem, renderCartFooter)
+      );
+      document.getElementById('favDropdown').addEventListener('show.bs.dropdown', () =>
+        loadItems('/api/favorites/', 'fav-items-container', 'fav-footer', 'fav-count', renderFavItem, renderFavFooter)
+      );
+
+      // Eliminar item de carrito
+      document.body.addEventListener('click', e => {
+        if (e.target.closest('.remove-cart-item')) {
+          const id = e.target.closest('.remove-cart-item').dataset.id;
+          fetch(`/api/cart/${id}/`, {
+            method: 'DELETE',
+            headers: {'X-CSRFToken':'{{ csrf_token }}'}
+          }).then(() =>
+            loadItems('/api/cart/', 'cart-items-container', 'cart-footer', 'cart-count', renderCartItem, renderCartFooter)
+          );
+        }
+      });
     });
   </script>
+
 </body>
 </html>

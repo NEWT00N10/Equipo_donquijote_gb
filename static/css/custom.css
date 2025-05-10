@@ -1,24 +1,52 @@
 /* custom.css — ajustes de marca y espaciado */
 /* Tipografías */
-body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-dark);
-  padding-top: 70px; /* espacio para navbar fijo */
-}
-h1, h2, h3, h4, h5 {
-  font-family: 'Montserrat', sans-serif;
-  color: var(--primary-color);
+
+:root {
+  --color-primary: #2A5CAA;
+  --color-secondary: #28A745;
+  --color-danger: #DC3545;
+  --color-bg-light: #F8F9FA;
+  --color-bg-white: #FFFFFF;
+  --text-primary: #333333;
+  --text-secondary: #6C757D;
+  --border-color: #E0E0E0;
+  --bg-light: #F8F9FA;   
+  --bg-neutral:       #F8F9FA;
+  --shadow-sm:        0 2px 8px rgba(0,0,0,0.1);
+  /* Tamaños fijos/proporciones */
+  --banner-height: 400px;        /* Altura fija para banners */
+  --banner-ratio: 16 / 5;        /* Ratio 16:5 */
+  --card-img-ratio: 2 / 3;       /* Ratio 2:3 para portadas */
 }
 
-/* Botones primarios y secundarios */
+/* Tipografías globales */
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-light);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--color-primary);
+}
+
+/* Enlaces */
+a {
+  color: var(--color-primary);
+}
+a:hover {
+  text-decoration: underline;
+}
+
+
+/* Botones primarios */
 .btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 .btn-primary:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary-hover);
+  background-color: darken(var(--color-primary), 5%);
+  border-color: darken(var(--color-primary), 5%);
 }
 
 .btn-outline-primary {
@@ -39,14 +67,6 @@ h1, h2, h3, h4, h5 {
   color: #fff;
 }
 
-/* Enlaces */
-a {
-  color: var(--primary-color);
-}
-a:hover {
-  color: var(--secondary-color);
-  text-decoration: none;
-}
 
 /* Ajustes generales */
 footer {
@@ -83,18 +103,10 @@ footer {
 .card-title {
   font-size: 1.1rem;
 }
-.carousel-item img {
-  object-fit: cover;
-  height: 400px;
+.carousel-item {
+  position: relative;
 }
 
-:root {
-  --primary-color: #0054A6;
-  --primary-hover: #004080;
-  --secondary-color: #E30B17;
-  --bg-light: #f8f9fa;
-  --text-dark: #343a40;
-}
 
 
 /* Footer ampliado */
@@ -195,4 +207,53 @@ footer h6 {
 }
 #search-suggestions .list-group-item {
   cursor: pointer;
+}
+
+
+/* Carousel full-width y overlay degradado */
+.carousel-img {
+  width: 100%;
+  aspect-ratio: var(--banner-ratio);
+  height: var(--banner-height);
+  object-fit: cover;
+  display: block;
+}
+
+.card-img-top {
+  width: 100%;
+  aspect-ratio: var(--card-img-ratio);
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-item::before {
+  content: "";
+  position: absolute;
+  inset: 0; 
+  background: linear-gradient(to bottom, rgba(42,92,170,0.4), rgba(0,0,0,0.1));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.carousel-caption {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.carousel-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.carousel-subtitle {
+  font-size: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(100%);  /* Íconos blancos */
 }

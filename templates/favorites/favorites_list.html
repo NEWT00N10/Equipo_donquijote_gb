@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Mis Favoritos – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">Mis Favoritos</h2>
+  {% if favorites %}
+    <div class="row g-4">
+      {% for fav in favorites %}
+        <div class="col-6 col-md-3">
+          <div class="card h-100 shadow-sm">
+            <img src="{{ fav.book.cover.url }}" class="card-img-top" alt="{{ fav.book.title }}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ fav.book.title }}</h5>
+              <p class="text-secondary small mb-2">{{ fav.book.author }}</p>
+              <a href="{% url 'book-detail' fav.book.id %}" class="mt-auto btn btn-sm btn-primary">
+                Ver detalle
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-secondary">No tienes libros en favoritos.</p>
+  {% endif %}
+</div>
+{% endblock %}

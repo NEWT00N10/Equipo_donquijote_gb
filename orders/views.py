@@ -3,7 +3,12 @@ from rest_framework.authtoken.models import Token
 from orders.models import CartItem
 from orders.views_api import OrderViewSet
 from circulation.models import Loan
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Order
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def cart_view(request):
     """
     Muestra los items del carrito y total provisional.
@@ -13,10 +18,7 @@ def cart_view(request):
 
     # Obtener items y calcular línea y total
     items = CartItem.objects.filter(user=request.user).select_related("book")
-    total = 0
-    for item in items:
-        item.line_total = item.book.price * item.quantity
-        total += item.line_total
+    total = sum(item.quantity * item.book.price for item in items)
 
     return render(request, "cart/cart.html", {
         "items": items,
@@ -70,3 +72,14 @@ def profile_view(request):
         "orders": orders,
         "loans": loans
     })
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'orders/list.html'
+    context_object_name = 'orders'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # Solo los pedidos del usuario logueado, más recientes primero
+        return Order.objects.filter(user=self.request.user).order_by('-created_at')

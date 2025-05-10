@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ book.title }} – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- Columna de imagen -->
+    <div class="col-md-5 mb-4">
+      <img
+        src="{% if book.cover %}{{ book.cover.url }}{% else %}{% static 'img/no-cover.png' %}{% endif %}"
+        alt="Portada de {{ book.title }}"
+        class="img-fluid rounded shadow-sm"
+      >
+    </div>
+
+    <!-- Columna de detalles -->
+    <div class="col-md-7">
+      <h2 class="fw-bold">{{ book.title }}</h2>
+      <p class="text-secondary mb-1">Por {{ book.author }}</p>
+      <p class="mb-3"><span class="badge bg-info text-dark">{{ book.genre }}</span> &middot; {{ book.get_book_type_display }}</p>
+
+      <h4 class="text-primary mb-4">${{ book.price }}</h4>
+
+      <!-- Botones AJAX -->
+      <div class="d-flex gap-2 mb-4">
+        <button id="btn-add-cart" class="btn btn-lg btn-primary">
+          <i class="bi bi-cart-plus me-2"></i>Agregar al carrito
+        </button>
+        <button id="btn-add-fav" class="btn btn-lg btn-outline-danger">
+          <i class="bi bi-heart me-2"></i>Favorito
+        </button>
+      </div>
+
+      <!-- Descripción (campo extra si lo tienes) -->
+      {% if book.description %}
+      <h5>Descripción</h5>
+      <p>{{ book.description }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const bookId = "{{ book.pk }}";
+
+  // Agregar al carrito
+  document.getElementById('btn-add-cart').addEventListener('click', async () => {
+    const res = await fetch(`/api/cart/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ book_id: bookId, quantity: 1 })
+    });
+    if (res.ok) {
+      alert('Libro agregado al carrito');
+      // Opcional: actualizar badge de carrito
+      const count = document.getElementById('cart-count');
+      count.textContent = parseInt(count.textContent) + 1;
+    } else if (res.status === 400) {
+      const data = await res.json();
+      alert('Error: ' + (data.detail || 'No se pudo agregar'));
+    }
+  });
+
+  // Agregar a favoritos
+  document.getElementById('btn-add-fav').addEventListener('click', async () => {
+    const res = await fetch(`/api/favorites/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ book: bookId })
+    });
+    if (res.ok) {
+      alert('Libro marcado como favorito');
+      const count = document.getElementById('fav-count');
+      count.textContent = parseInt(count.textContent) + 1;
+    } else if (res.status === 400) {
+      alert('Ya está en favoritos');
+    } else if (res.status === 401) {
+      window.location.href = "{% url 'login' %}?next={% url 'book-detail' book.pk %}";
+    }
+  });
+});
+</script>
+{% endblock %}
