@@ -1,22 +1,18 @@
-from django.shortcuts import redirect, render
-from rest_framework.authtoken.models import Token
-from orders.models import CartItem
-from orders.views_api import OrderViewSet
-from circulation.models import Loan
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order
-from django.contrib.auth.decorators import login_required
+
+from orders.models import CartItem, Order, OrderItem
+from circulation.models import Loan
+
 
 @login_required
 def cart_view(request):
     """
     Muestra los items del carrito y total provisional.
     """
-    if not request.user.is_authenticated:
-        return redirect("admin:login")
-
-    # Obtener items y calcular línea y total
+    # Obtener items y calcular subtotal y total
     items = CartItem.objects.filter(user=request.user).select_related("book")
     total = sum(item.quantity * item.book.price for item in items)
 
@@ -25,49 +21,59 @@ def cart_view(request):
         "total": total
     })
 
+
+@login_required
 def checkout_view(request):
     """
-    - GET: redirige al carrito.
-    - POST: crea el pedido y muestra confirmación.
+    GET: muestra el resumen de checkout.
+    POST: crea la orden, descuenta stock, vacía carrito y redirige a éxito.
     """
-    if not request.user.is_authenticated:
-        return redirect("admin:login")
+    items = CartItem.objects.filter(user=request.user).select_related("book")
+    total = sum(item.quantity * item.book.price for item in items)
 
-    if request.method != "POST":
-        # Si es GET u otro método, volvemos al carrito
-        return redirect("cart-view")
+    if request.method == "POST":
+        # 1) Crear la orden
+        order = Order.objects.create(user=request.user, total=total)
+        # 2) Crear cada OrderItem y descontar stock
+        for item in items:
+            OrderItem.objects.create(
+                order=order,
+                book=item.book,
+                quantity=item.quantity,
+                price=item.book.price
+            )
+            item.book.copies_available -= item.quantity
+            item.book.save()
+        # 3) Vaciar carrito
+        items.delete()
+        # 4) Redirigir a página de éxito
+        return redirect("checkout-success", order.id)
 
-    # POST: ejecutar la creación de pedido vía API
-    viewset = OrderViewSet.as_view({"post": "create"})
-    response = viewset(request)
-
-    if response.status_code != 201:
-        # Error → volver al carrito mostrando el mensaje
-        items = CartItem.objects.filter(user=request.user).select_related("book")
-        return render(request, "cart/cart.html", {
-            "items": items,
-            "error": response.data.get("detail", "Error al procesar pedido.")
-        })
-
-    # Pedido creado → mostrar resumen
-    order = response.data
+    # GET
     return render(request, "cart/checkout.html", {
+        "items": items,
+        "total": total
+    })
+
+
+@login_required
+def checkout_success_view(request, order_id):
+    """
+    Muestra la confirmación de pedido exitoso.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    return render(request, "cart/checkout_success.html", {
         "order": order
     })
 
+
+@login_required
 def profile_view(request):
     """
-    Muestra el dashboard de usuario con historial de pedidos y préstamos.
+    Dashboard de usuario con historial de pedidos y préstamos.
     """
-    if not request.user.is_authenticated:
-        return redirect("admin:login")
-
-    # Pedidos del usuario
-    orders = request.user.orders.all()
-
-    # Préstamos activos y finalizados
+    orders = request.user.orders.all().order_by("-created_at")
     loans = Loan.objects.filter(borrower=request.user).order_by("-borrowed_at")
-
     return render(request, "profile.html", {
         "orders": orders,
         "loans": loans
@@ -75,11 +81,13 @@ def profile_view(request):
 
 
 class OrderListView(LoginRequiredMixin, ListView):
+    """
+    Lista paginada de pedidos del usuario.
+    """
     model = Order
-    template_name = 'orders/list.html'
-    context_object_name = 'orders'
+    template_name = "orders/list.html"
+    context_object_name = "orders"
     paginate_by = 10
 
     def get_queryset(self):
-        # Solo los pedidos del usuario logueado, más recientes primero
-        return Order.objects.filter(user=self.request.user).order_by('-created_at')
+        return Order.objects.filter(user=self.request.user).order_by("-created_at")
