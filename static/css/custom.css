@@ -104,16 +104,16 @@ footer h5 {
 }
 
 footer a {
-  color: var(--text-dark);
   text-decoration: none;
+  color: var(--text-dark);
   font-size: 0.9rem;
 }
 footer a:hover {
-  color: var(--primary-color);
+  color: var(--primary-hover);
 }
 
-footer .form-control {
-  border-radius: 0.25rem 0 0 0.25rem;
+footer form .form-control {
+  font-size: 0.9rem;
 }
 footer .btn-primary {
   border-radius: 0 0.25rem 0.25rem 0;
@@ -162,4 +162,9 @@ footer input[type="email"] {
 
 footer hr {
   border-color: #dee2e6;
+}
+
+footer h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
 }
