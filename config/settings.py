@@ -33,8 +33,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # futuras apps:
     # "rest_framework",
+    "rest_framework",
+    "rest_framework.authtoken",
     "accounts",
     "catalog",
+    "circulation",
 ]
 
 MIDDLEWARE = [
@@ -66,14 +69,27 @@ WSGI_APPLICATION = "config.wsgi.application"
 # --- DB ---
 DATABASES = {
     "default": {
-        "ENGINE": env("SQL_ENGINE"),
-        "NAME":   env("SQL_NAME"),
-        "USER":   env("SQL_USER"),
+        "ENGINE":   env("SQL_ENGINE"),
+        "NAME":     env("SQL_NAME"),
+        "USER":     env("SQL_USER"),
         "PASSWORD": env("SQL_PASSWORD"),
-        "HOST":   env("SQL_HOST"),
-        "PORT":   env("SQL_PORT"),
+        "HOST":     env("SQL_HOST"),
+        "PORT":     env("SQL_PORT"),
+        "ATOMIC_REQUESTS": True,     # <<-- aquí
     }
 }
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
+}
+
+
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
