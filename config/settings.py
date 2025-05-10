@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "circulation",
     "favorites",
     "reviews",
+    "orders",
 ]
 
 MIDDLEWARE = [

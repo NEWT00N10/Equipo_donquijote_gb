@@ -24,6 +24,7 @@ from catalog.views_api import BookViewSet
 from circulation.views_api import LoanViewSet, ReservationViewSet
 from favorites.views_api import FavoriteViewSet
 from reviews.views_api import ReviewViewSet
+from orders.views_api import CartItemViewSet, OrderViewSet
 
 
 router = DefaultRouter()
@@ -32,6 +33,11 @@ router.register(r"loans", LoanViewSet, basename="loan")
 router.register(r"reservations", ReservationViewSet, basename="reservation")
 router.register(r"favorites", FavoriteViewSet, basename="favorite")
 router.register(r"reviews", ReviewViewSet, basename="review")
+router.register(r"cart", CartItemViewSet, basename="cartitem")
+router.register(r"orders", OrderViewSet, basename="order")
+
+
+
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
