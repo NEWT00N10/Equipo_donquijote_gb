@@ -22,11 +22,15 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from catalog.views_api import BookViewSet
 from circulation.views_api import LoanViewSet, ReservationViewSet
+from favorites.views_api import FavoriteViewSet
+
+
 
 router = DefaultRouter()
 router.register(r"books", BookViewSet, basename="book")
 router.register(r"loans", LoanViewSet, basename="loan")
 router.register(r"reservations", ReservationViewSet, basename="reservation")
+router.register(r"favorites", FavoriteViewSet, basename="favorite")
 
 
 urlpatterns = [
