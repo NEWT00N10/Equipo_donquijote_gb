@@ -52,3 +52,37 @@ def fulfill_oldest_reservation(book_id: int):
     send_mail(subject, msg, settings.DEFAULT_FROM_EMAIL, [loan.borrower.email])
 
     return f"Reserva cumplida para {loan.borrower.username}"
+
+@shared_task 
+def remind_due_soon():
+    """
+    Envía un correo a los usuarios cuyos préstamos vencen
+    dentro de 48 horas y aún no han sido devueltos.
+    """
+    from circulation.models import Loan  
+
+    today = timezone.now().date()
+    target_date = today + timezone.timedelta(days=2)
+
+    loans = Loan.objects.filter(
+        due_date=target_date,
+        returned_at__isnull=True
+    ).select_related("borrower", "book")
+
+    count = 0
+    for loan in loans:
+        borrower = loan.borrower
+        if not borrower.email:
+            continue  # sin email no enviamos
+
+        subject = f"Recordatorio: devuelve '{loan.book.title}' antes de {loan.due_date}"
+        msg = (
+            f"Hola {borrower.username},\n\n"
+            f"Te recordamos que tu préstamo del libro '{loan.book.title}' "
+            f"vence el {loan.due_date}. Por favor, devuélvelo a tiempo para evitar sanciones.\n\n"
+            "¡Gracias!\nEquipo Don Quijote GB"
+        )
+        send_mail(subject, msg, "noreply@donquijotegb.local", [borrower.email])
+        count += 1
+
+    return f"{count} recordatorio(s) enviados"
