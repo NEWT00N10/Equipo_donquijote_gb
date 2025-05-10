@@ -29,3 +29,4 @@ tzdata==2025.2
 vine==5.1.0
 wcwidth==0.2.13
 django-filter==25.1
+gunicorn>=20.0.0

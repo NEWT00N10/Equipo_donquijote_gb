@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import environ
-
+import os
 # --- base dir ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "catalog",
     "circulation",
     "favorites",
+    "reviews",
 ]
 
 MIDDLEWARE = [
@@ -69,17 +70,19 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # --- DB ---
+
 DATABASES = {
-    "default": {
-        "ENGINE":   env("SQL_ENGINE"),
-        "NAME":     env("SQL_NAME"),
-        "USER":     env("SQL_USER"),
-        "PASSWORD": env("SQL_PASSWORD"),
-        "HOST":     env("SQL_HOST"),
-        "PORT":     env("SQL_PORT"),
-        "ATOMIC_REQUESTS": True,     # <<-- aquí
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('SQL_NAME', 'donquijote_db'),
+        'USER': os.getenv('SQL_USER', 'dq_admin'),
+        'PASSWORD': os.getenv('SQL_PASSWORD', ''),
+        # Aquí el cambio: if no encuentra SQL_HOST en el entorno, usa localhost
+        'HOST': os.getenv('SQL_HOST', '127.0.0.1'),
+        'PORT': os.getenv('SQL_PORT', '5432'),
     }
 }
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
