@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Tu Carrito – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+  <h1 class="mb-4">Tu Carrito</h1>
+
+  {% if items %}
+    <div class="table-responsive shadow-sm mb-4 bg-white rounded">
+      <table class="table align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Producto</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Precio unitario</th>
+            <th scope="col">Total línea</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                {% if item.book.cover %}
+                  <img src="{{ item.book.cover.url }}" alt="{{ item.book.title }}"
+                    class="me-3" style="height: 60px; object-fit: cover;">
+                {% else %}
+                  <img src="{% static 'img/no-cover.png' %}" alt="Sin portada"
+                    class="me-3" style="height: 60px; object-fit: cover;">
+                {% endif %}
+                <div>
+                  <a href="{% url 'book-detail' item.book.pk %}"
+                    class="fw-bold text-decoration-none text-dark">
+                    {{ item.book.title }}
+                  </a>
+                  <p class="mb-0 text-muted small">{{ item.book.author }}</p>
+                </div>
+              </div>
+            </td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.book.price|floatformat:2 }} MXN</td>
+            <td>{{ item.line_total|floatformat:2 }} MXN</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end mb-4">
+      <h4>Total: <span class="text-primary">{{ total|floatformat:2 }} MXN</span></h4>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <form action="{% url 'cart-checkout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success btn-lg">
+          Confirmar pedido
+        </button>
+      </form>
+    </div>
+  {% else %}
+    <p class="text-center">No tienes artículos en tu carrito.</p>
+    <p class="text-center">
+      <a href="{% url 'book-list' %}" class="btn btn-primary mt-3">
+        Ver Catálogo
+      </a>
+    </p>
+  {% endif %}
+</div>
+{% endblock %}

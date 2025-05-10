@@ -168,3 +168,11 @@ footer h6 {
   font-family: 'Montserrat', sans-serif;
   font-size: 0.9rem;
 }
+
+/* Cart page refinements */
+.table-responsive {
+  background-color: #fff;
+}
+.table thead th {
+  border-bottom: 2px solid var(--primary-color);
+}
