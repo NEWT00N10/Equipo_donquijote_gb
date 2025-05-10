@@ -128,35 +128,36 @@
         <!-- Columna Newsletter -->
         <div class="col-6 col-md-3 mb-4">
           <h5 class="mb-3">Newsletter</h5>
-          <p class="small text-muted">
-            Suscríbete para recibir promociones y novedades.
-          </p>
-          <form class="d-flex" action="#" method="post">
+          <p class="small">Recibe novedades y promociones</p>
+          <form class="d-flex" method="post" action="#">
             {% csrf_token %}
             <input
               type="email"
-              name="email"
               class="form-control me-2"
-              placeholder="Tu correo"
+              name="email"
+              placeholder="Tu correo electrónico"
               required
             >
-            <button class="btn btn-primary" type="submit">Enviar</button>
+            <button type="submit" class="btn btn-secondary">OK</button>
           </form>
-          <!-- Redes sociales -->
-          <div class="mt-3">
-            <a href="#" class="me-2"><img src="{% static 'img/social/facebook.svg' %}" alt="Facebook" height="24"></a>
-            <a href="#" class="me-2"><img src="{% static 'img/social/twitter.svg' %}" alt="Twitter" height="24"></a>
-            <a href="#"><img src="{% static 'img/social/instagram.svg' %}" alt="Instagram" height="24"></a>
-          </div>
         </div>
       </div>
-      <div class="text-center pt-4 border-top">
-        <small class="text-muted">
+
+      <hr>
+
+      <div class="row">
+        <div class="col-md-6 text-muted small">
           &copy; 2025 Don Quijote GB. Todos los derechos reservados.
-        </small>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <a href="#" class="me-3 small">Términos</a>
+          <a href="#" class="me-3 small">Privacidad</a>
+          <a href="#" class="small">Contacto</a>
+        </div>
       </div>
     </div>
   </footer>
+
 
 
   <!-- Bootstrap 5 Bundle JS (Popper incluido) -->

@@ -99,9 +99,8 @@ footer {
 
 /* Footer ampliado */
 footer h5 {
-  font-size: 1.1rem;
+  font-weight: 600;
   margin-bottom: 1rem;
-  color: var(--text-dark);
 }
 
 footer a {
@@ -140,4 +139,27 @@ footer img:hover {
     width: 100%;
     margin-bottom: 0.5rem;
   }
+}
+
+footer ul li a {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+footer ul li a:hover {
+  color: var(--primary-color);
+}
+
+footer p.small {
+  font-size: 0.85rem;
+}
+
+
+footer input[type="email"] {
+  max-width: 200px;
+}
+
+footer hr {
+  border-color: #dee2e6;
 }
