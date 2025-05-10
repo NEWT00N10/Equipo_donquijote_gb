@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi Cuenta – Don Quijote GB{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+  <h1 class="mb-4">Mi Cuenta</h1>
+
+  <!-- Pestañas -->
+  <ul class="nav nav-tabs mb-4" id="accountTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="orders-tab" data-bs-toggle="tab"
+              data-bs-target="#orders" type="button" role="tab"
+              aria-controls="orders" aria-selected="true">
+        Pedidos ({{ orders.count }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="loans-tab" data-bs-toggle="tab"
+              data-bs-target="#loans" type="button" role="tab"
+              aria-controls="loans" aria-selected="false">
+        Préstamos ({{ loans.count }})
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="accountTabContent">
+    <!-- Pedidos -->
+    <div class="tab-pane fade show active" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+      {% if orders %}
+        <div class="table-responsive mb-4 shadow-sm bg-white rounded">
+          <table class="table mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th><th>Fecha</th><th>Items</th><th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+              <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.created_at|date:"d M Y H:i" }}</td>
+                <td>{{ order.items.count }}</td>
+                <td>{{ order.total|floatformat:2 }} MXN</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-center">No tienes pedidos aún.</p>
+      {% endif %}
+    </div>
+
+    <!-- Préstamos -->
+    <div class="tab-pane fade" id="loans" role="tabpanel" aria-labelledby="loans-tab">
+      {% if loans %}
+        <div class="table-responsive mb-4 shadow-sm bg-white rounded">
+          <table class="table mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Libro</th><th>Préstamo</th><th>Vencimiento</th><th>Devolución</th><th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for loan in loans %}
+              <tr>
+                <td>
+                  <a href="{% url 'book-detail' loan.book.pk %}"
+                     class="text-decoration-none">
+                    {{ loan.book.title }}
+                  </a>
+                </td>
+                <td>{{ loan.borrowed_at|date:"d M Y" }}</td>
+                <td>{{ loan.due_date|date:"d M Y" }}</td>
+                <td>
+                  {% if loan.returned_at %}
+                    {{ loan.returned_at|date:"d M Y" }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>
+                  {% if loan.returned_at %}
+                    <span class="badge bg-success">Devolvido</span>
+                  {% elif loan.due_date < now %}
+                    <span class="badge bg-danger">Vencido</span>
+                  {% else %}
+                    <span class="badge bg-warning text-dark">Activo</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-center">No tienes préstamos registrados.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

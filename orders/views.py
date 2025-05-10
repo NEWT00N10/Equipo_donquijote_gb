@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from rest_framework.authtoken.models import Token
 from orders.models import CartItem
 from orders.views_api import OrderViewSet
+from circulation.models import Loan
 
 def cart_view(request):
     """
@@ -50,4 +51,22 @@ def checkout_view(request):
     order = response.data
     return render(request, "cart/checkout.html", {
         "order": order
+    })
+
+def profile_view(request):
+    """
+    Muestra el dashboard de usuario con historial de pedidos y préstamos.
+    """
+    if not request.user.is_authenticated:
+        return redirect("admin:login")
+
+    # Pedidos del usuario
+    orders = request.user.orders.all()
+
+    # Préstamos activos y finalizados
+    loans = Loan.objects.filter(borrower=request.user).order_by("-borrowed_at")
+
+    return render(request, "profile.html", {
+        "orders": orders,
+        "loans": loans
     })
