@@ -1,28 +1,38 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from circulation.models import Loan, Reservation
+from catalog.models import Book
 
 class Command(BaseCommand):
-    help = "Crea/actualiza los grupos de roles y asigna permisos básicos."
+    help = "Crea/actualiza grupos de roles y asigna permisos básicos."
 
     def handle(self, *args, **kwargs):
-        # --- crear grupos si no existen ---
+        # --- grupos ---
         admin_group, _ = Group.objects.get_or_create(name="Admin")
         lib_group,   _ = Group.objects.get_or_create(name="Bibliotecario")
         cus_group,   _ = Group.objects.get_or_create(name="Cliente")
 
-        # --- obtener todos los permisos ---
-        all_perms = Permission.objects.all()
-
-        # Admin ⇒ todos los permisos
-        admin_group.permissions.set(all_perms)
-
-        # Bibliotecario ⇒ sólo permisos de apps 'catalog' (cuando exista) y 'accounts'
-        catalog_accounts_perms = all_perms.filter(
-            content_type__app_label__in=["catalog", "accounts"]
+        # --- permisos específicos ---
+        loan_perms = Permission.objects.filter(
+            content_type=ContentType.objects.get_for_model(Loan)
         )
-        lib_group.permissions.set(catalog_accounts_perms)
+        resv_perms = Permission.objects.filter(
+            content_type=ContentType.objects.get_for_model(Reservation)
+        )
+        book_perms = Permission.objects.filter(
+            content_type=ContentType.objects.get_for_model(Book)
+        )
 
-        # Cliente ⇒ de momento ninguno (acceso controlado vía vistas)
-        cus_group.permissions.clear()
+        # --- asignaciones por grupo ---
+        # Admin → todos
+        admin_group.permissions.set(Permission.objects.all())
+
+        # Bibliotecario → permisos de Libro, Loan y Reservation
+        lib_group.permissions.set(book_perms | loan_perms | resv_perms)
+
+        # Cliente → solo 'view_' de Book
+        client_perms = book_perms.filter(codename__startswith="view_")
+        cus_group.permissions.set(client_perms)
 
         self.stdout.write(self.style.SUCCESS("Grupos y permisos creados/actualizados"))
