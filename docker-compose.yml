@@ -17,6 +17,49 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+  web:
+    build: .
+    container_name: dqgb_web
+    restart: unless-stopped
+    env_file: .env
+    command: /app/entrypoint.sh
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  worker:
+    build: .
+    container_name: dqgb_worker
+    restart: unless-stopped
+    env_file: .env
+    command: celery -A config worker --loglevel=info
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  beat:
+    build: .
+    container_name: dqgb_beat
+    restart: unless-stopped
+    env_file: .env
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
 
 volumes:
-  postgres_data:                       # volumen nombrado para persistencia
+  postgres_data:
+  static_volume:
+  media_volume:
+                     # volumen nombrado para persistencia
