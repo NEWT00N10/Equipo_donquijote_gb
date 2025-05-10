@@ -92,11 +92,72 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="mt-5 py-4 bg-white text-center border-top">
-    <div class="container">
-      <p class="mb-0">&copy; 2025 Don Quijote GB</p>
+  <footer class="bg-white border-top mt-5">
+    <div class="container py-5">
+      <div class="row">
+        <!-- Columna Libros -->
+        <div class="col-6 col-md-3 mb-4">
+          <h5 class="mb-3">Libros</h5>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'book-list' %}">Catálogo completo</a></li>
+            <li><a href="#">Nuevos lanzamientos</a></li>
+            <li><a href="#">Recomendados</a></li>
+            <li><a href="#">Promociones</a></li>
+          </ul>
+        </div>
+        <!-- Columna Para ti -->
+        <div class="col-6 col-md-3 mb-4">
+          <h5 class="mb-3">Para ti</h5>
+          <ul class="list-unstyled">
+            <li><a href="#">Mis Favoritos</a></li>
+            <li><a href="{% url 'cart-view' %}">Mi carrito</a></li>
+            <li><a href="#">Historial de pedidos</a></li>
+            <li><a href="#">Mis reseñas</a></li>
+          </ul>
+        </div>
+        <!-- Columna Ayuda -->
+        <div class="col-6 col-md-3 mb-4">
+          <h5 class="mb-3">Ayuda</h5>
+          <ul class="list-unstyled">
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contáctanos</a></li>
+            <li><a href="#">Términos y condiciones</a></li>
+            <li><a href="#">Política de privacidad</a></li>
+          </ul>
+        </div>
+        <!-- Columna Newsletter -->
+        <div class="col-6 col-md-3 mb-4">
+          <h5 class="mb-3">Newsletter</h5>
+          <p class="small text-muted">
+            Suscríbete para recibir promociones y novedades.
+          </p>
+          <form class="d-flex" action="#" method="post">
+            {% csrf_token %}
+            <input
+              type="email"
+              name="email"
+              class="form-control me-2"
+              placeholder="Tu correo"
+              required
+            >
+            <button class="btn btn-primary" type="submit">Enviar</button>
+          </form>
+          <!-- Redes sociales -->
+          <div class="mt-3">
+            <a href="#" class="me-2"><img src="{% static 'img/social/facebook.svg' %}" alt="Facebook" height="24"></a>
+            <a href="#" class="me-2"><img src="{% static 'img/social/twitter.svg' %}" alt="Twitter" height="24"></a>
+            <a href="#"><img src="{% static 'img/social/instagram.svg' %}" alt="Instagram" height="24"></a>
+          </div>
+        </div>
+      </div>
+      <div class="text-center pt-4 border-top">
+        <small class="text-muted">
+          &copy; 2025 Don Quijote GB. Todos los derechos reservados.
+        </small>
+      </div>
     </div>
   </footer>
+
 
   <!-- Bootstrap 5 Bundle JS (Popper incluido) -->
   <script

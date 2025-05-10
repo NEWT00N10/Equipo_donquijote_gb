@@ -95,3 +95,49 @@ footer {
   --bg-light: #f8f9fa;
   --text-dark: #343a40;
 }
+
+
+/* Footer ampliado */
+footer h5 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+footer a {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+footer a:hover {
+  color: var(--primary-color);
+}
+
+footer .form-control {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+footer .btn-primary {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+footer img {
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+footer img:hover {
+  filter: none;
+}
+
+@media (max-width: 767px) {
+  footer .row > div {
+    text-align: center;
+  }
+  footer form {
+    flex-direction: column;
+  }
+  footer form .form-control,
+  footer form .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
