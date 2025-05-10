@@ -1,9 +1,59 @@
 /* custom.css — ajustes de marca y espaciado */
+/* Tipografías */
 body {
-  padding-top: 70px; /* deja espacio para el navbar fijo */
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  background-color: #f8f9fa;
-  color: #343a40;
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  padding-top: 70px; /* espacio para navbar fijo */
+}
+h1, h2, h3, h4, h5 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--primary-color);
+}
+
+/* Botones primarios y secundarios */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+.btn-outline-secondary:hover {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+/* Enlaces */
+a {
+  color: var(--primary-color);
+}
+a:hover {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+/* Ajustes generales */
+footer {
+  padding: 1rem 0;
+  background-color: #fff;
+  border-top: 1px solid #dee2e6;
+  font-size: 0.9rem;
 }
 
 /* Navbar personalizado */
@@ -27,4 +77,21 @@ footer {
   background-color: #ffffff;
   margin-top: 2rem;
   border-top: 1px solid #dee2e6;
+}
+
+
+.card-title {
+  font-size: 1.1rem;
+}
+.carousel-item img {
+  object-fit: cover;
+  height: 400px;
+}
+
+:root {
+  --primary-color: #0054A6;
+  --primary-hover: #004080;
+  --secondary-color: #E30B17;
+  --bg-light: #f8f9fa;
+  --text-dark: #343a40;
 }

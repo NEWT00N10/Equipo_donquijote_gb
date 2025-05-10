@@ -1,15 +1,26 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Bootstrap 5 CSS via CDN -->
+  <meta charset="UTF-8">
+  <link
+  href="https://fonts.googleapis.com/css2?
+    family=Montserrat:wght@400;600&
+    family=Open+Sans:wght@300;400;600&
+    display=swap"
+  rel="stylesheet"
+  >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Don Quijote GB{% endblock %}</title>
+
+  <!-- Bootstrap 5 CSS via CDN -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
     integrity="sha384-XLy2gua6VYxlpiFlw1F0Xh8pMe+5dRbo6RbOaY1TVVje3ME5gG9MX9G6hfbv4H62"
     crossorigin="anonymous"
   >
+
   <!-- Custom CSS para ajustes específicos -->
   <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 </head>
@@ -76,17 +87,35 @@
       </div>
     </nav>
   </header>
-  <main>
+
+  <main class="pt-5">
     {% block content %}{% endblock %}
   </main>
-  <footer>
-    <p>&copy; 2025 Don Quijote GB</p>
+
+  <footer class="mt-5 py-4 bg-white text-center border-top">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Don Quijote GB</p>
+    </div>
   </footer>
-    <!-- Bootstrap 5 Bundle JS (Popper incluido) -->
+
+  <!-- Bootstrap 5 Bundle JS (Popper incluido) -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-w76A2z02tY3r3QFfyy2FZl5ybvA+0QwQ1hbbnrS0E3jUksDq8nZDB+1f9UnF+MzT"
     crossorigin="anonymous"
   ></script>
+
+  <!-- Inicializar el carousel de promociones -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var carouselEl = document.getElementById('promoCarousel');
+      if (carouselEl) {
+        new bootstrap.Carousel(carouselEl, {
+          interval: 5000,
+          ride: 'carousel'
+        });
+      }
+    });
+  </script>
 </body>
 </html>
