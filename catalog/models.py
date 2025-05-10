@@ -11,6 +11,12 @@ class Book(models.Model):
         ("HIS", "Historia"),
         # Amplía según lo necesites
     ]
+    TYPE_CHOICES = [
+        ("PHYS", "Físico"),
+        ("EBOOK", "E‑book"),
+        ("AUDIO", "Audiolibro"),
+    ]
+
 
     title            = models.CharField("Título", max_length=255)
     subtitle         = models.CharField("Subtítulo", max_length=255, blank=True)
@@ -21,6 +27,12 @@ class Book(models.Model):
     isbn_13          = models.CharField("ISBN‑13", max_length=13, unique=True, blank=True, null=True)
     genre            = models.CharField("Género", max_length=3, choices=GENRE_CHOICES, default="FIC")
     language         = models.CharField("Idioma", max_length=30, default="Español")
+    book_type = models.CharField(
+        "Tipo de libro",
+        max_length=5,
+        choices=TYPE_CHOICES,
+        default="PHYS",
+    )
     pages            = models.PositiveIntegerField("Páginas", blank=True, null=True)
     description      = models.TextField("Descripción", blank=True)
     cover            = models.ImageField("Portada", upload_to="covers/", blank=True)

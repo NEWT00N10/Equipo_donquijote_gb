@@ -1,10 +1,21 @@
 from rest_framework import viewsets, permissions
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
 from catalog.models import Book
 from catalog.serializers import BookSerializer
-from api.permissions import IsLibrarianOrAdmin
+from catalog.filters import BookFilter
 
-class BookViewSet(viewsets.ModelViewSet):        # ← era ReadOnly
+
+class BookViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listado público con filtros avanzados.
+    """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    http_method_names = ["get", "head", "options"]
-    permission_classes = [permissions.AllowAny]  # solo lectura pública
+    permission_classes = [permissions.AllowAny]
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = BookFilter
+    ordering_fields = ["price", "title"]
+    search_fields = ["title", "author", "isbn_10", "isbn_13"]
