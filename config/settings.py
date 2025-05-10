@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import environ
 import os
+
 # --- base dir ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False))
@@ -27,6 +28,7 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
+    'django_filters',
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -87,6 +89,15 @@ DATABASES = {
     }
 }
 
+import sys
+# Usar SQLite en memoria durante pytest para evitar problemas de conexión PostgreSQL
+if 'pytest' in sys.argv[0]:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

@@ -28,8 +28,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app
 
 # Ajustar permisos para el usuario
-RUN chown -R django:django /app
-USER django
+#RUN chown -R django:django /app
+#USER django
 
 # Entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -30,6 +30,10 @@ if not User.objects.filter(username=username).exists():
 PY
 fi
 
+# Asegurar permisos en directorios de estáticos y media
+mkdir -p /app/staticfiles /app/media
+chown -R django:django /app/staticfiles /app/media
+
 # Recolectar estáticos
 echo "📦 Collectstatic..."
 python manage.py collectstatic --noinput

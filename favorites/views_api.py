@@ -6,7 +6,9 @@ class FavoriteViewSet(viewsets.ModelViewSet):
     """
     Permite a usuarios autenticados listar, crear y borrar sus favoritos.
     """
+    queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
+    pagination_class = None  # <-- desactiva paginación
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
